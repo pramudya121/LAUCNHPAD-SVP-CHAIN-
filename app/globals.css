@@ -176,7 +176,36 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+    background: var(--lunafad-bg);
+  }
   body {
     @apply bg-background text-foreground;
+    min-width: 320px;
+    background-image: radial-gradient(circle at 50% -20%, rgba(61, 104, 170, .18), transparent 42rem), linear-gradient(180deg, #080c14 0%, #0b1019 100%);
   }
+  button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--lunafad-blue);
+    outline-offset: 3px;
+  }
+}
+
+@keyframes lunafad-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.lunafad-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.1), rgba(255,255,255,.04));
+  background-size: 200% 100%;
+  animation: lunafad-shimmer 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .lunafad-skeleton { animation: none; }
 }

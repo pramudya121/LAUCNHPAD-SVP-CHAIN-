@@ -4,7 +4,10 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'LUNAFAD — SVP Chain Launchpad',
-  description: 'Discover, launch, and trade community tokens on SVP Chain.',
+  description: 'LUNAFAD is the enterprise-grade SVP Chain launchpad for discovering, launching, trading, and analyzing community tokens.',
+  applicationName: 'LUNAFAD',
+  category: 'finance',
+  keywords: ['SVP Chain', 'token launchpad', 'on-chain trading', 'community tokens'],
   generator: 'v0.app',
   icons: {
     icon: [
