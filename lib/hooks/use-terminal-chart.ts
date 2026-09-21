@@ -11,9 +11,9 @@ export function useTerminalChart(tokenAddress: string | undefined, timeframe: Ti
   const supabase = getSupabaseBrowserClient()
   const key = tokenAddress && supabase ? ['candles', tokenAddress, timeframe] : null
   const { data, mutate, error } = useSWR<Candle[]>(key, async () => {
-    const { data, error } = await supabase!.from('token_candles').select('timestamp, open, high, low, close, volume').eq('token_address', tokenAddress).eq('timeframe', timeframe).order('timestamp', { ascending: true }).limit(500)
+    const { data, error } = await supabase!.from('token_candles').select('timestamp, open, high, low, close, volume').eq('token_address', tokenAddress as string).eq('timeframe', timeframe).order('timestamp', { ascending: true }).limit(500)
     if (error) throw error
-    return (data ?? []).map((row) => ({ time: Math.floor(new Date(row.timestamp).getTime() / 1000), open: Number(row.open), high: Number(row.high), low: Number(row.low), close: Number(row.close), volume: Number(row.volume) }))
+    return (data ?? []).map((row: { timestamp: string; open: number; high: number; low: number; close: number; volume: number }) => ({ time: Math.floor(new Date(row.timestamp).getTime() / 1000), open: Number(row.open), high: Number(row.high), low: Number(row.low), close: Number(row.close), volume: Number(row.volume) }))
   }, { revalidateOnFocus: false })
 
   useEffect(() => {

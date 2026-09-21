@@ -32,7 +32,7 @@ export function shortenAddress(address?: string, chars = 4) {
 
 export function formatUnitsSafe(value: bigint | undefined, decimals = 18) {
   if (value === undefined) return '—'
-  const whole = value / 10n ** BigInt(decimals)
+  const whole = value / BigInt(10) ** BigInt(decimals)
   return whole.toLocaleString()
 }
 

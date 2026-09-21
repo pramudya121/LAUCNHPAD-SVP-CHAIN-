@@ -5,7 +5,7 @@ export const publicClient = createPublicClient({ chain: SVP_TESTNET, transport: 
 
 export function getWalletClient(): WalletClient | null {
   if (typeof window === 'undefined' || !(window as Window & { ethereum?: unknown }).ethereum) return null
-  return createWalletClient({ chain: SVP_TESTNET, transport: custom((window as Window & { ethereum: any }).ethereum) })
+  return createWalletClient({ chain: SVP_TESTNET, transport: custom((window as unknown as { ethereum: Parameters<typeof custom>[0] }).ethereum) })
 }
 
 export async function connectWallet() {
