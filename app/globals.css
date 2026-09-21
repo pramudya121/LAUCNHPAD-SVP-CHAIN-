@@ -1,4 +1,23 @@
 @import 'tailwindcss';
+
+:root {
+  --lunafad-bg: #080c14;
+  --lunafad-surface: #101722;
+  --lunafad-elevated: #151e2c;
+  --lunafad-border: rgba(255,255,255,.09);
+  --lunafad-text: #f5f7fb;
+  --lunafad-muted: #8b98ad;
+  --lunafad-blue: #6e9de1;
+  --lunafad-emerald: #71d7ba;
+  --lunafad-gold: #d9b878;
+  --lunafad-danger: #f08b9a;
+}
+
+::selection { background: rgba(110,157,225,.35); color: var(--lunafad-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
