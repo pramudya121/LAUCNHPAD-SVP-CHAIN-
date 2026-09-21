@@ -23,7 +23,7 @@ export function getFactoryContract(account?: Account) {
   return getContract({
     address: FACTORY,
     abi: launchpadFactoryAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -31,7 +31,7 @@ export function getBondingCurveContract(curveAddress: Address, account?: Account
   return getContract({
     address: curveAddress,
     abi: bondingCurveAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -39,7 +39,7 @@ export function getTokenContract(tokenAddress: Address, account?: Account) {
   return getContract({
     address: tokenAddress,
     abi: erc20Abi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -48,7 +48,7 @@ export function getFeeManagerContract(account?: Account) {
   return getContract({
     address: FEE_MANAGER,
     abi: feeManagerAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -57,7 +57,7 @@ export function getAntiBotManagerContract(account?: Account) {
   return getContract({
     address: ANTIBOT_MANAGER,
     abi: antiBotManagerAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -66,7 +66,7 @@ export function getReferralSystemContract(account?: Account) {
   return getContract({
     address: REFERRAL_SYSTEM,
     abi: referralSystemAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
 
@@ -75,6 +75,6 @@ export function getLPLockerContract(account?: Account) {
   return getContract({
     address: LP_LOCKER,
     abi: lpLockerAbi,
-    client: { public: publicClient, wallet: account ? getWalletClient() : undefined }
+    client: { public: publicClient, wallet: account ? (getWalletClient() ?? undefined) : undefined }
   })
 }
