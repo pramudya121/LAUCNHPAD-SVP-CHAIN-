@@ -198,6 +198,11 @@
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
 }
+@keyframes lunafad-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-7px) rotate(2deg); }
+}
+.lunafad-mascot-float { animation: lunafad-float 4s ease-in-out infinite; }
 
 .lunafad-skeleton {
   background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.1), rgba(255,255,255,.04));
