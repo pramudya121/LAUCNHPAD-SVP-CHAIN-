@@ -28,6 +28,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'dark',
   themeColor: '#0b0f16',
+  width: 'device-width',
+  initialScale: 1,
+  userScalable: true,
 }
 
 export default function RootLayout({
@@ -36,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
