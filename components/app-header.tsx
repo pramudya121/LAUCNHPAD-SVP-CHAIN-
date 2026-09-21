@@ -1,0 +1,17 @@
+'use client'
+
+import Link from 'next/link'
+import { Bell, Plus, Search, Wallet, Zap } from 'lucide-react'
+import { useState } from 'react'
+
+export function AppHeader({ active }: { active?: string }) {
+  const [wallet, setWallet] = useState(false)
+  const links = [['Explore', '/explore'], ['Trending', '/trending'], ['Leaderboard', '/leaderboard'], ['Portfolio', '/portfolio']]
+  return <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#0b0f16]/90 backdrop-blur-xl"><div className="mx-auto flex h-[72px] max-w-[1480px] items-center gap-5 px-5 lg:px-8"><Link href="/" className="flex shrink-0 items-center gap-3"><span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#8eb1eb] to-[#345d9d] shadow-[0_0_30px_rgba(52,93,157,.35)]"><Zap className="size-4 fill-white" /></span><span className="text-lg font-semibold tracking-[-0.04em]">LUNA<span className="text-[#8eb1eb]">FAD</span></span></Link><nav className="hidden items-center gap-1 lg:flex">{links.map(([label, href]) => <Link key={href} href={href} className={`rounded-lg px-3 py-2 text-xs transition ${active === label ? 'bg-white/[0.08] text-white' : 'text-[#8190a7] hover:bg-white/[0.04] hover:text-white'}`}>{label}</Link>)}</nav><div className="relative ml-auto hidden w-56 md:block"><Search className="absolute left-3 top-2.5 size-4 text-[#64738b]" /><input aria-label="Search tokens" placeholder="Search tokens, creators..." className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.035] pl-9 pr-3 text-xs outline-none transition focus:border-[#668bc7]" /></div><Link href="/create" className="hidden items-center gap-2 rounded-lg bg-[#f1f5fa] px-3.5 py-2.5 text-xs font-semibold text-[#172033] shadow-lg shadow-white/[0.04] transition hover:bg-white sm:flex"><Plus className="size-3.5" />Create token</Link><button aria-label="Notifications" className="hidden size-9 items-center justify-center rounded-lg border border-white/[0.08] text-[#8c98ab] sm:flex"><Bell className="size-4" /></button><button onClick={() => setWallet(!wallet)} className="flex items-center gap-2 rounded-lg border border-[#668bc7]/30 bg-[#345d9d]/20 px-3 py-2.5 text-xs font-medium text-[#b9cff4] transition hover:bg-[#345d9d]/30"><Wallet className="size-3.5" />{wallet ? '0x71...A4C2' : 'Connect wallet'}</button></div></header>
+}
+
+export function PageFrame({ active, children }: { active?: string; children: React.ReactNode }) { return <main className="min-h-screen bg-[#0b0f16] text-white"><AppHeader active={active} /><div className="mx-auto max-w-[1480px] px-5 py-8 lg:px-8 lg:py-12">{children}</div></main> }
+
+export function SectionHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) { return <div className="mb-8"><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#6e9de1]">{eyebrow}</p><h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{title}</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-[#8492a8]">{description}</p></div> }
+
+export function EmptyState({ title, body }: { title: string; body: string }) { return <div className="rounded-2xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 py-16 text-center"><div className="mx-auto size-2 rounded-full bg-[#71d7ba] shadow-[0_0_24px_#71d7ba]" /><h2 className="mt-5 text-lg font-medium">{title}</h2><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71809a]">{body}</p></div> }
