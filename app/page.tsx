@@ -1,7 +1,9 @@
 'use client'
 
+import useSWR from 'swr'
 import { useState } from 'react'
 import { ArrowDownUp, Bell, ChevronDown, Copy, Flame, Globe2, LayoutGrid, List, Menu, Plus, Search, Settings2, Star, TrendingUp, Wallet, X, Zap } from 'lucide-react'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 const tokens = [
   { name: 'MoonCat', symbol: 'MCAT', price: '$0.00482', change: '+128.4%', market: '$482K', volume: '$91.2K', age: '2h', color: 'from-violet-500 to-fuchsia-400', icon: 'MC' },
@@ -25,9 +27,28 @@ export default function Page() {
   const [walletOpen, setWalletOpen] = useState(false)
   const [connected, setConnected] = useState(false)
   const [query, setQuery] = useState('')
-  const filtered = tokens.filter(t => `${t.name} ${t.symbol}`.toLowerCase().includes(query.toLowerCase()))
+  const supabase = getSupabaseBrowserClient()
+  const { data: liveTokens } = useSWR(supabase ? 'lunafad-tokens' : null, async () => {
+    if (!supabase) return []
+    const { data, error } = await supabase.from('tokens').select('name, symbol, price, market_cap, volume_24h, created_at').order('created_at', { ascending: false }).limit(8)
+    if (error) throw error
+    return data
+  }, { revalidateOnFocus: false })
+  const catalog = liveTokens?.length ? liveTokens.map((token, index) => ({
+    name: token.name,
+    symbol: token.symbol,
+    price: `$${Number(token.price).toFixed(5)}`,
+    change: '+0.0%',
+    market: `$${Math.round(Number(token.market_cap) / 1000)}K`,
+    volume: `$${Math.round(Number(token.volume_24h) / 1000)}K`,
+    age: 'new',
+    color: tokens[index % tokens.length].color,
+    icon: token.symbol.slice(0, 2).toUpperCase(),
+  })) : tokens
+  const filtered = catalog.filter(t => `${t.name} ${t.symbol}`.toLowerCase().includes(query.toLowerCase()))
 
   const nav = ['Overview', 'Explore', 'Trending', 'Portfolio']
+  const marketTokens = catalog.length ? catalog : tokens
   return (
     <main className="min-h-screen bg-[#0b0f16] text-white">
       <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#0b0f16]/90 backdrop-blur-xl">
@@ -46,7 +67,7 @@ export default function Page() {
 
         <section className="mt-10"><div className="mb-4 flex items-end justify-between"><div><p className="mb-1 text-[11px] font-medium uppercase tracking-[0.16em] text-[#71819a]">Market pulse</p><h2 className="text-xl font-semibold tracking-tight">Trending tokens</h2></div><button onClick={() => setActive('Explore')} className="hidden items-center gap-1 text-xs text-[#8eb1eb] sm:flex">View all <ChevronDown className="size-3 -rotate-90" /></button></div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{filtered.map((token, i) => <article key={token.symbol} className="group rounded-xl border border-white/[0.08] bg-[#111722] p-4 transition hover:-translate-y-0.5 hover:border-[#345d9d]/70 hover:bg-[#141d2b]"><div className="mb-4 flex items-start justify-between"><div className="flex items-center gap-3"><TokenIcon token={token} /><div><div className="flex items-center gap-1.5"><h3 className="text-sm font-medium">{token.name}</h3>{i < 2 && <span className="rounded bg-[#345d9d]/20 px-1 py-0.5 text-[9px] text-[#9dbbed]">NEW</span>}</div><p className="mt-0.5 text-[11px] text-[#71809a]">{token.symbol}</p></div></div><button aria-label={`Favorite ${token.name}`} onClick={() => setWatching(watching.includes(token.symbol) ? watching.filter(x => x !== token.symbol) : [...watching, token.symbol])} className="text-[#657187] hover:text-[#d8b36e]"><Star className={`size-4 ${watching.includes(token.symbol) ? 'fill-[#d8b36e] text-[#d8b36e]' : ''}`} /></button></div><div className="flex items-end justify-between"><div><p className="text-lg font-semibold tracking-tight">{token.price}</p><p className={`mt-1 text-[11px] font-medium ${token.change.startsWith('-') ? 'text-[#e87984]' : 'text-[#71d7ba]'}`}>{token.change} <span className="font-normal text-[#657187]">24h</span></p></div><Sparkline down={token.change.startsWith('-')} /></div><div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/[0.06] pt-3"><Metric label="MCap" value={token.market} /><Metric label="Volume" value={token.volume} /><Metric label="Age" value={token.age} /></div></article>)}</div></section>
 
-        <section className="mt-10 grid gap-5 lg:grid-cols-[1.4fr_1fr]"><div className="rounded-xl border border-white/[0.08] bg-[#111722] p-5"><div className="mb-5 flex items-center justify-between"><div><h2 className="text-sm font-semibold">Market overview</h2><p className="mt-1 text-[11px] text-[#71809a]">Real-time activity across SVP Chain</p></div><button className="flex items-center gap-1.5 rounded-md border border-white/[0.08] px-2.5 py-1.5 text-[10px] text-[#a5a8a9]">24h <ChevronDown className="size-3" /></button></div><div className="flex h-40 items-end gap-1.5 sm:gap-3">{[34,48,39,58,51,64,53,70,61,75,68,84,72,91,79,88,82,96,87,100,93,97].map((height,i) => <div key={i} className="group relative flex flex-1 flex-col justify-end"><div className={`rounded-t-sm transition group-hover:bg-[#6e9de1] ${i > 16 ? 'bg-[#4774b9]' : 'bg-[#345d9d]/70'}`} style={{height: `${height}%`}} /></div>)}</div><div className="mt-3 flex justify-between text-[10px] text-[#5d6b81]"><span>12:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>Now</span></div></div><div className="rounded-xl border border-white/[0.08] bg-[#111722] p-5"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-sm font-semibold">Top movers</h2><p className="mt-1 text-[11px] text-[#71809a]">Biggest changes today</p></div><TrendingUp className="size-4 text-[#71d7ba]" /></div><div className="flex flex-col gap-1">{tokens.slice(0,3).map((token,i) => <div key={token.symbol} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-white/[0.035]"><span className="w-4 text-center text-[11px] text-[#58657a]">0{i+1}</span><TokenIcon token={token} size="sm" /><div className="min-w-0 flex-1"><p className="truncate text-xs font-medium">{token.name}</p><p className="text-[10px] text-[#71809a]">{token.symbol}</p></div><div className="text-right"><p className="text-xs font-medium">{token.price}</p><p className={`text-[10px] ${token.change.startsWith('-') ? 'text-[#e87984]' : 'text-[#71d7ba]'}`}>{token.change}</p></div></div>)}</div></div></section>
+        <section className="mt-10 grid gap-5 lg:grid-cols-[1.4fr_1fr]"><div className="rounded-xl border border-white/[0.08] bg-[#111722] p-5"><div className="mb-5 flex items-center justify-between"><div><h2 className="text-sm font-semibold">Market overview</h2><p className="mt-1 text-[11px] text-[#71809a]">Real-time activity across SVP Chain</p></div><button className="flex items-center gap-1.5 rounded-md border border-white/[0.08] px-2.5 py-1.5 text-[10px] text-[#a5a8a9]">24h <ChevronDown className="size-3" /></button></div><div className="flex h-40 items-end gap-1.5 sm:gap-3">{[34,48,39,58,51,64,53,70,61,75,68,84,72,91,79,88,82,96,87,100,93,97].map((height,i) => <div key={i} className="group relative flex flex-1 flex-col justify-end"><div className={`rounded-t-sm transition group-hover:bg-[#6e9de1] ${i > 16 ? 'bg-[#4774b9]' : 'bg-[#345d9d]/70'}`} style={{height: `${height}%`}} /></div>)}</div><div className="mt-3 flex justify-between text-[10px] text-[#5d6b81]"><span>12:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>Now</span></div></div><div className="rounded-xl border border-white/[0.08] bg-[#111722] p-5"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-sm font-semibold">Top movers</h2><p className="mt-1 text-[11px] text-[#71809a]">Biggest changes today</p></div><TrendingUp className="size-4 text-[#71d7ba]" /></div><div className="flex flex-col gap-1">{marketTokens.slice(0,3).map((token,i) => <div key={token.symbol} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-white/[0.035]"><span className="w-4 text-center text-[11px] text-[#58657a]">0{i+1}</span><TokenIcon token={token} size="sm" /><div className="min-w-0 flex-1"><p className="truncate text-xs font-medium">{token.name}</p><p className="text-[10px] text-[#71809a]">{token.symbol}</p></div><div className="text-right"><p className="text-xs font-medium">{token.price}</p><p className={`text-[10px] ${token.change.startsWith('-') ? 'text-[#e87984]' : 'text-[#71d7ba]'}`}>{token.change}</p></div></div>)}</div></div></section>
       </div>
 
       <footer className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-white/[0.07] px-5 py-6 text-[11px] text-[#657187] sm:flex-row sm:items-center sm:justify-between lg:px-8"><div className="flex items-center gap-2"><div className="flex size-5 items-center justify-center rounded-md bg-[#345d9d]"><Zap className="size-3 fill-white text-white" /></div><span>LUNAFAD on SVP Chain</span></div><div className="flex gap-4"><span>Docs</span><span>Discord</span><span>Terms</span><span className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-[#71d7ba]" />All systems operational</span></div></footer>
