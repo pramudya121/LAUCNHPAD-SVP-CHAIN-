@@ -1,14 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { Copy, ExternalLink, Star, Wallet } from 'lucide-react'
 import { useBondingCurve } from '@/lib/hooks/use-bonding-curve'
 import { useTerminalChart } from '@/lib/hooks/use-terminal-chart'
 import { explorerAddress, shortenAddress, type Timeframe } from '@/lib/contracts/config'
 
-export default function TokenDetailPage({ params }: { params: { address: string } }) {
-  const address = params.address as `0x${string}`
+export default function TokenDetailPage({ params }: { params: Promise<{ address: string }> }) {
+  const { address: rawAddress } = use(params)
+  const address = rawAddress as `0x${string}`
   const [timeframe, setTimeframe] = useState<Timeframe>('1h')
   const { data: curve, loading: curveLoading } = useBondingCurve(address)
   const { candles, live } = useTerminalChart(address, timeframe)

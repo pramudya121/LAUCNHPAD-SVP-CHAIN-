@@ -6,12 +6,7 @@ import { ArrowDownUp, BarChart3, Bell, Check, ChevronDown, Copy, Flame, Globe2, 
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 type Token = { name: string; symbol: string; price: string; change: string; market: string; volume: string; age: string; color: string; icon: string; creator?: string }
-const seedTokens: Token[] = [
-  { name: 'MoonCat', symbol: 'MCAT', price: '$0.00482', change: '+128.4%', market: '$482K', volume: '$91.2K', age: '2h', color: 'from-violet-500 to-fuchsia-400', icon: 'MC', creator: '0x71...A4C2' },
-  { name: 'Luna Dog', symbol: 'LUDOG', price: '$0.00129', change: '+74.8%', market: '$129K', volume: '$38.6K', age: '5h', color: 'from-sky-400 to-blue-600', icon: 'LD', creator: '0x9A...81F0' },
-  { name: 'Silver Pepe', symbol: 'SPEPE', price: '$0.00064', change: '+42.1%', market: '$64K', volume: '$24.8K', age: '8h', color: 'from-slate-300 to-slate-500', icon: 'SP', creator: '0x18...7C2A' },
-  { name: 'Orbit Frog', symbol: 'ORBIT', price: '$0.00031', change: '-8.2%', market: '$31K', volume: '$18.4K', age: '1d', color: 'from-emerald-300 to-green-700', icon: 'OF', creator: '0x44...D9E1' },
-]
+const tokenAccentClasses = ['from-violet-500 to-fuchsia-400', 'from-sky-400 to-blue-600', 'from-slate-300 to-slate-500', 'from-emerald-300 to-green-700']
 
 function TokenIcon({ token, small = false }: { token: Token; small?: boolean }) { return <div className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${token.color} font-bold text-white shadow-lg shadow-black/20 ${small ? 'size-8 text-[10px]' : 'size-10 text-xs'}`}>{token.icon}</div> }
 function Sparkline({ down = false }: { down?: boolean }) { return <svg className="h-8 w-20" viewBox="0 0 80 32" fill="none" aria-hidden="true"><path d={down ? 'M1 6C9 10 10 23 19 18C28 13 29 22 39 20C49 18 51 28 61 25C70 22 73 29 79 27' : 'M1 28C8 26 11 18 19 22C27 26 28 12 37 16C46 20 48 4 57 10C66 16 70 3 79 5'} stroke={down ? '#e87984' : '#71d7ba'} strokeWidth="2" strokeLinecap="round" /></svg> }
@@ -21,7 +16,7 @@ export default function Page() {
   const [active, setActive] = useState('Overview'); const [mobileNav, setMobileNav] = useState(false); const [query, setQuery] = useState(''); const [watching, setWatching] = useState<string[]>([]); const [walletOpen, setWalletOpen] = useState(false); const [connected, setConnected] = useState(false); const [selected, setSelected] = useState<Token | null>(null); const [created, setCreated] = useState(false); const [step, setStep] = useState(1); const [form, setForm] = useState({ name: '', symbol: '', description: '', supply: '1000000000' });
   const supabase = getSupabaseBrowserClient()
   const { data: liveTokens } = useSWR<Array<{ name: string; symbol: string; price: number; market_cap: number; volume_24h: number }>>(supabase ? 'lunafad-tokens' : null, async () => { const { data, error } = await supabase!.from('tokens').select('name, symbol, price, market_cap, volume_24h, created_at').order('created_at', { ascending: false }).limit(8); if (error) throw error; return (data ?? []) as Array<{ name: string; symbol: string; price: number; market_cap: number; volume_24h: number }> }, { revalidateOnFocus: false })
-  const catalog = liveTokens?.length ? liveTokens.map((t, i) => ({ name: t.name, symbol: t.symbol, price: `$${Number(t.price).toFixed(5)}`, change: '+0.0%', market: `$${Math.round(Number(t.market_cap) / 1000)}K`, volume: `$${Math.round(Number(t.volume_24h) / 1000)}K`, age: 'new', color: seedTokens[i % seedTokens.length].color, icon: t.symbol.slice(0, 2).toUpperCase(), creator: 'on-chain' })) : seedTokens
+  const catalog = (liveTokens ?? []).map((t, i) => ({ name: t.name, symbol: t.symbol, price: `$${Number(t.price ?? 0).toFixed(5)}`, change: '+0.0%', market: `$${Math.round(Number(t.market_cap ?? 0) / 1000)}K`, volume: `$${Math.round(Number(t.volume_24h ?? 0) / 1000)}K`, age: 'new', color: tokenAccentClasses[i % tokenAccentClasses.length], icon: t.symbol.slice(0, 2).toUpperCase(), creator: 'on-chain' }))
   const filtered = useMemo(() => catalog.filter(t => `${t.name} ${t.symbol}`.toLowerCase().includes(query.toLowerCase())), [catalog, query])
   const nav = ['Overview', 'Explore', 'Trending', 'Portfolio']
   const go = (page: string) => { setActive(page); setSelected(null); setMobileNav(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
