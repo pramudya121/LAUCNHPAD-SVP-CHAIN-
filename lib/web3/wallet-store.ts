@@ -7,7 +7,8 @@ import { getWalletClient, readWalletState, subscribeWallet } from '@/lib/web3/cl
 export function useWalletIdentity() {
   const [address, setAddress] = useState<Address | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
-  const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'wrong-network' | 'disconnected'>('idle')
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'wrong-network' | 'disconnected' | 'error'>('idle')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -15,12 +16,14 @@ export function useWalletIdentity() {
       if (!mounted) return
       setAddress(state.address)
       setChainId(state.chainId)
+      setError(null)
       setStatus(state.address ? state.isSupportedChain ? 'connected' : 'wrong-network' : 'disconnected')
     })
     const unsubscribe = subscribeWallet((state) => {
       if (!mounted) return
       setAddress(state.address)
       setChainId(state.chainId)
+      setError(null)
       setStatus(state.address ? state.isSupportedChain ? 'connected' : 'wrong-network' : 'disconnected')
     })
     return () => { mounted = false; unsubscribe() }
@@ -28,17 +31,25 @@ export function useWalletIdentity() {
 
   async function connect() {
     setStatus('connecting')
-    const wallet = getWalletClient()
-    if (!wallet) { setStatus('disconnected'); throw new Error('No EVM wallet detected.') }
-    const [nextAddress] = await wallet.requestAddresses()
-    const nextChainId = await wallet.getChainId()
-    setAddress(nextAddress)
-    setChainId(nextChainId)
-    setStatus(nextChainId === 8888 ? 'connected' : 'wrong-network')
-    return { address: nextAddress, chainId: nextChainId }
+    setError(null)
+    try {
+      const wallet = getWalletClient()
+      if (!wallet) throw new Error('No EVM wallet detected.')
+      const state = await readWalletState()
+      if (!state.address) throw new Error('Wallet connection was not approved.')
+      setAddress(state.address)
+      setChainId(state.chainId)
+      setStatus(state.isSupportedChain ? 'connected' : 'wrong-network')
+      return { address: state.address, chainId: state.chainId }
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : 'Wallet connection failed.'
+      setError(message)
+      setStatus('error')
+      throw cause
+    }
   }
 
-  return { address, chainId, status, connect }
+  return { address, chainId, status, error, connect }
 } 
 
 export function walletAddressLabel(address: Address | null) {
