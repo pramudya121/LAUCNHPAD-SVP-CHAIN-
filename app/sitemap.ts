@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const publicRoutes = ['/', '/explore', '/trending', '/leaderboard', '/portfolio', '/create', '/creator', '/notifications', '/settings', '/api-access', '/release-status', '/quality-center', '/security-center', '/teams', '/admin', '/system-health']
+const publicRoutes = ['/', '/explore', '/trending', '/leaderboard', '/portfolio', '/create', '/creator', '/notifications', '/settings', '/api-access', '/release-status', '/quality-center', '/security-center', '/ecosystem', '/teams', '/admin', '/system-health']
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lunafad.app'
