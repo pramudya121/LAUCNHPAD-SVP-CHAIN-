@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'LUNAFAD is the enterprise-grade SVP Chain launchpad for discovering, launching, trading, and analyzing community tokens.',
   applicationName: 'LUNAFAD',
   category: 'finance',
-  keywords: ['SVP Chain', 'token launchpad', 'on-chain trading', 'community tokens'],
+  keywords: ['SVP Chain', 'token launchpad', 'on-chain trading', 'community tokens', 'token API', 'webhooks'],
   generator: 'v0.app',
   icons: {
     icon: [
