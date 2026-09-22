@@ -18,6 +18,12 @@ export function useWalletIdentity() {
       setChainId(state.chainId)
       setError(null)
       setStatus(state.address ? state.isSupportedChain ? 'connected' : 'wrong-network' : 'disconnected')
+    }).catch((cause) => {
+      if (!mounted) return
+      setAddress(null)
+      setChainId(null)
+      setError(cause instanceof Error ? cause.message : 'Unable to read wallet state.')
+      setStatus('error')
     })
     const unsubscribe = subscribeWallet((state) => {
       if (!mounted) return
