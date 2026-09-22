@@ -1,4 +1,4 @@
-export const publicRoutes = ['/', '/overview', '/explore', '/trending', '/leaderboard', '/portfolio', '/create', '/creator', '/notifications', '/settings', '/api-access', '/release-status', '/teams', '/admin', '/system-health'] as const
+export const publicRoutes = ['/', '/overview', '/explore', '/trending', '/leaderboard', '/portfolio', '/create', '/creator', '/notifications', '/settings', '/api-access', '/release-status', '/quality-center', '/security-center', '/teams', '/admin', '/system-health'] as const
 
 export type PublicRoute = (typeof publicRoutes)[number]
 

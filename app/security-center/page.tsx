@@ -1,0 +1,13 @@
+import { KeyRound, LockKeyhole, ShieldCheck, TriangleAlert } from 'lucide-react'
+import { PageFrame, SectionHeading } from '@/components/app-header'
+
+const controls = [
+  ['Wallet signing boundary', 'Private keys stay in the connected wallet. The app requests signatures only for explicit actions.', 'verified'],
+  ['Account and chain quarantine', 'Wrong-network and account-change events clear stale portfolio state before another read.', 'verified'],
+  ['Webhook verification', 'Inbound events remain unconfigured until a server-side signature secret and replay guard are enabled.', 'blocked'],
+  ['Authenticated persistence', 'Team, alert, and API ownership data requires verified account persistence and RLS.', 'pending'],
+]
+
+export default function SecurityCenterPage() {
+  return <PageFrame active="Settings"><div className="mx-auto max-w-5xl"><SectionHeading eyebrow="Phase 12 · security readiness" title="Security center" description="See which trust boundaries are enforced now and which production controls still require backend activation." /><div className="mt-8 grid gap-4 sm:grid-cols-3"><div className="rounded-2xl border border-[#71d7ba]/20 bg-[#71d7ba]/[0.06] p-5"><ShieldCheck className="size-5 text-[#71d7ba]" /><p className="mt-3 text-2xl font-semibold">2</p><p className="mt-1 text-xs text-[#71809a]">verified controls</p></div><div className="rounded-2xl border border-[#d9b878]/20 bg-[#d9b878]/[0.05] p-5"><TriangleAlert className="size-5 text-[#d9b878]" /><p className="mt-3 text-2xl font-semibold">1</p><p className="mt-1 text-xs text-[#71809a]">pending control</p></div><div className="rounded-2xl border border-[#ef8e9d]/20 bg-[#ef8e9d]/[0.05] p-5"><LockKeyhole className="size-5 text-[#ef8e9d]" /><p className="mt-3 text-2xl font-semibold">1</p><p className="mt-1 text-xs text-[#71809a]">blocked before production</p></div></div><section className="mt-6 space-y-3">{controls.map(([label, detail, status]) => <div key={label} className="rounded-2xl border border-white/[0.08] bg-[#101722] p-5"><div className="flex items-start justify-between gap-4"><div className="flex gap-3"><KeyRound className="mt-0.5 size-4 text-[#9ab8ea]" /><div><h2 className="text-sm font-medium">{label}</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-[#71809a]">{detail}</p></div></div><span className={`rounded-full border px-2 py-1 text-[10px] uppercase tracking-wider ${status === 'verified' ? 'border-[#71d7ba]/20 text-[#71d7ba]' : status === 'blocked' ? 'border-[#ef8e9d]/25 text-[#ef8e9d]' : 'border-[#d9b878]/25 text-[#d9b878]'}`}>{status}</span></div></div>)}</section></div></PageFrame>
+}
